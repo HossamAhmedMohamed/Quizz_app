@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "675657966749",
+    "project_id": "todo-app-94ffa",
+    "storage_bucket": "todo-app-94ffa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675657966749:android:c1edcfe4d40e3b2a3a6074",
+        "android_client_info": {
+          "package_name": "com.example.iam_training"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjl6RT5G5_9ky7o6wfFTTZ9UrYCucjb4o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
