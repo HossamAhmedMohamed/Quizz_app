@@ -1,7 +1,10 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sort_child_properties_last
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sort_child_properties_last, unused_import
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:iam_training/constants/strings.dart';
+import 'package:iam_training/logic/auth_cubit/auth_cubit.dart';
 import 'package:iam_training/presentation/widgets/confirm_password_image.dart';
 
 class ConfirmPassword extends StatefulWidget {
@@ -19,39 +22,42 @@ class _ConfirmPasswordState extends State<ConfirmPassword> {
 
   bool isVisible = true;
 
-  void resetPassword(String newPassword) async {
-    if (passwordController.text == confirmPasswordController.text) {
-      User? user = FirebaseAuth.instance.currentUser;
+  // void resetPassword(String newPassword) async {
+  //   if (passwordController.text == confirmPasswordController.text) {
+  //     User? user = FirebaseAuth.instance.currentUser;
 
-      try {
-        await user?.updatePassword(newPassword);
-        // Show success message
-      } catch (e) {
-        // Handle error
-        print(e);
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Something error..."),
-        backgroundColor: Colors.black,
-        duration: Duration(seconds: 5),
-      ));
-    }
-  }
+  //     try {
+  //       await user?.updatePassword(newPassword);
+  //       // Show success message
+  //     } catch (e) {
+  //       // Handle error
+  //       print(e);
+  //     }
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //       content: Text("Something error..."),
+  //       backgroundColor: Colors.black,
+  //       duration: Duration(seconds: 5),
+  //     ));
+  //   }
+  // }
 
   Widget buildIntroText() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          "New password must be",
-          style: TextStyle(fontSize: 18),
-        ),
-        Text(
-          "different from last password",
-          style: TextStyle(fontSize: 18),
-        )
-      ],
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "New password must be",
+            style: TextStyle(fontSize: 18),
+          ),
+          Text(
+            "different from last password",
+            style: TextStyle(fontSize: 18),
+          )
+        ],
+      ),
     );
   }
 
@@ -180,11 +186,59 @@ class _ConfirmPasswordState extends State<ConfirmPassword> {
         });
   }
 
+  Widget buildResetPasswordbloC() {
+    return BlocListener<AuthCubit, AuthState>(
+      listenWhen: (previous, current) {
+        return previous != current;
+      },
+      listener: (context, state) {
+        if (state is Loading) {
+          showProgressIndicator(context);
+        }
+
+        if (state is SuccessfullyUpdated) {
+          Navigator.pop(context);
+          Navigator.of(context).pushReplacementNamed(doneScreen);
+        }
+
+        if (state is ErrorOcurred) {
+          String errorMsg = (state).errMsg;
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(errorMsg),
+            backgroundColor: Colors.black,
+            duration: Duration(seconds: 5),
+          ));
+        }
+      },
+      child: Container(),
+    );
+  }
+
+  Future<void> resetPassword(BuildContext context) async {
+    if (!formKey.currentState!.validate()) {
+      Navigator.pop(context);
+      return;
+    } else {
+      if (passwordController.text == confirmPasswordController.text) {
+        Navigator.pop(context);
+        formKey.currentState!.save();
+        BlocProvider.of<AuthCubit>(context)
+            .resetPassword(confirmPasswordController);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Something error..."),
+          backgroundColor: Colors.black,
+          duration: Duration(seconds: 5),
+        ));
+      }
+    }
+  }
+
   Widget buildButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
         showProgressIndicator(context);
-        resetPassword(passwordController.text);
+        resetPassword(context);
       },
       child: Text(
         "Save Password",
@@ -226,7 +280,8 @@ class _ConfirmPasswordState extends State<ConfirmPassword> {
                 SizedBox(
                   height: heightScreen / 20,
                 ),
-                buildButton(context)
+                buildButton(context),
+                buildResetPasswordbloC()
               ],
             ),
           ),

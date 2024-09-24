@@ -16,8 +16,11 @@ class SignupScreen extends StatefulWidget {
 class _LoginScreenState extends State<SignupScreen> {
   final GlobalKey<FormState> formKey = GlobalKey();
 
+  late String phoneNumber;
+
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final phoneController = TextEditingController();
 
   bool isVisible = true;
 
@@ -64,8 +67,8 @@ class _LoginScreenState extends State<SignupScreen> {
     } else {
       Navigator.pop(context);
       formKey.currentState!.save();
-      BlocProvider.of<AuthCubit>(context)
-          .createEmailAndPassword(emailController, passwordController);
+      BlocProvider.of<AuthCubit>(context).createEmailAndPassword(
+          emailController, passwordController, phoneController);
     }
   }
 
@@ -77,7 +80,7 @@ class _LoginScreenState extends State<SignupScreen> {
         }
         if (state is Submitted) {
           Navigator.pop(context);
-          Navigator.pushReplacementNamed(context, loginScreen);
+          Navigator.of(context).pushNamed(verifyScreen, arguments: phoneNumber);
         }
 
         if (state is ErrorOcurred) {
@@ -102,13 +105,51 @@ class _LoginScreenState extends State<SignupScreen> {
         children: [
           Container(
             width: double.infinity,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black, width: 0.2),
+              borderRadius: BorderRadius.all(Radius.circular(6)),
+            ),
+            child: TextFormField(
+              // autofocus: true,
+              // autovalidateMode: AutovalidateMode.onUserInteraction,
+              controller: phoneController,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.mobile_friendly_rounded),
+                hintText: "Phone Number",
+                hintStyle: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 13,
+                ),
+                border: InputBorder.none,
+              ),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return "Please enter your number";
+                } else if (value.length < 11) {
+                  return "Must be 11";
+                }
+                return null;
+              },
+              onSaved: (value) {
+                phoneNumber = value!;
+              },
+            ),
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          Container(
+            width: double.infinity,
             padding: EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.black, width: 0.2),
               borderRadius: BorderRadius.all(Radius.circular(6)),
             ),
             child: TextFormField(
-              autofocus: true,
+              // autofocus: true,
               controller: emailController,
               keyboardType: TextInputType.text,
               autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -148,7 +189,7 @@ class _LoginScreenState extends State<SignupScreen> {
                 onPasswordChanged(password);
               },
               obscureText: isVisible ? true : false,
-              autofocus: true,
+              // autofocus: true,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               controller: passwordController,
               keyboardType: TextInputType.text,

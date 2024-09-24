@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       onGenerateRoute: appRouter.generationRoute,
-      initialRoute: signUpScreen,
+      initialRoute: initialRoute,
       // home:
     );
   }

@@ -8,25 +8,28 @@ class DoneScreen extends StatelessWidget {
   const DoneScreen({super.key});
 
   Widget buildIntroText(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          "Congratulations",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height / 20,
-        ),
-        Text(
-          "You have updated the password. please",
-          style: TextStyle(fontSize: 18),
-        ),
-        Text(
-          "login again with your latest password",
-          style: TextStyle(fontSize: 18),
-        )
-      ],
+    return SizedBox(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "Congratulations",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height / 20,
+          ),
+          Text(
+            "You have updated the password.please",
+            style: TextStyle(fontSize: 16),
+          ),
+          Text(
+            "login again with your latest password",
+            style: TextStyle(fontSize: 15),
+          )
+        ],
+      ),
     );
   }
 

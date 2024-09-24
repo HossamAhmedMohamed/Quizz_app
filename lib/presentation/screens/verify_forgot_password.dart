@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iam_training/constants/strings.dart';
 import 'package:iam_training/logic/auth_cubit/auth_cubit.dart';
+import 'package:iam_training/presentation/screens/confirm_password.dart';
 import 'package:iam_training/presentation/widgets/verify_image.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
-class VerifyScreen extends StatelessWidget {
-  VerifyScreen({super.key, required this.phoneNumber});
+class VerifyForgotPassword extends StatelessWidget {
+  VerifyForgotPassword({super.key, required this.phoneNumber});
 
   final phoneNumber;
 
@@ -22,7 +23,7 @@ class VerifyScreen extends StatelessWidget {
           "Please enter the 6 digit code",
           style: TextStyle(fontSize: 18),
         ),
-         Container(
+        Container(
             // margin: EdgeInsets.symmetric(horizontal: 2),
             child: RichText(
                 text: TextSpan(
@@ -33,10 +34,9 @@ class VerifyScreen extends StatelessWidget {
                         fontWeight: FontWeight.w300,
                         height: 1.4),
                     children: <TextSpan>[
-                  TextSpan(
-                      text: "$phoneNumber",
-                      style: TextStyle(color: Colors.blue)),
-                ])))
+              TextSpan(
+                  text: "$phoneNumber", style: TextStyle(color: Colors.blue)),
+            ])))
       ],
     );
   }
@@ -50,17 +50,17 @@ class VerifyScreen extends StatelessWidget {
         if (State is Loading) {
           showProgressIndicator(context);
         }
-        if (State is SuccessfullyLinked) {
+        if (State is PhoneOtpVerified) {
           Navigator.pop(context);
-          Navigator.of(context).pushReplacementNamed(loginScreen);
+          Navigator.of(context).pushReplacementNamed(confirmPasswordScreen);
         }
         if (State is ErrorOcurred) {
-           Navigator.pop(context);
-          String errMsg = (State).errMsg;
+          Navigator.pop(context);
+          String errorMsg = (State).errMsg;
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text("Not valid code"),
+            content: Text(errorMsg),
             backgroundColor: Colors.black,
-            duration: Duration(seconds: 3),
+            duration: Duration(seconds: 5),
           ));
         }
       },
@@ -131,7 +131,7 @@ class VerifyScreen extends StatelessWidget {
   }
 
   void verify(BuildContext context) {
-    BlocProvider.of<AuthCubit>(context).verifyAndLinkPhone(otpCode);
+    BlocProvider.of<AuthCubit>(context).submitOtp(otpCode);
   }
 
   Widget buildButton(BuildContext context) {

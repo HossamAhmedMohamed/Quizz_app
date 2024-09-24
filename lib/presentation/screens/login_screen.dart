@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iam_training/constants/strings.dart';
 import 'package:iam_training/logic/auth_cubit/auth_cubit.dart';
+import 'package:iam_training/presentation/screens/home_screen.dart';
 import 'package:iam_training/presentation/widgets/image.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -30,34 +31,40 @@ class _LoginScreenState extends State<LoginScreen> {
   //     Navigator.pop(context);
   //     formKey.currentState!.save();
   //     BlocProvider.of<AuthCubit>(context)
-  //         .signIn(emailController, passwordController);
+  //         .signInWithEmailAndPassword(emailController, passwordController);
   //   }
   // }
 
-  // Widget buildSignInWithEmailAndPassword() {
-  //   return BlocListener<AuthCubit, AuthState>(
+  Widget buildSignInWithEmailAndPassword() {
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is Loading) {
+          showProgressIndicator(context);
+        }
+        if (state is SuccessfullyLoggedIn) {
+          Navigator.pop(context);
+          Navigator.pushReplacementNamed(context, homeScreen);
 
-  //     listener: (context, state) {
-  //       if (state is LoadingLogin) {
-  //         showProgressIndicator(context);
-  //       }
-  //       if (state is SuccessfullyLoggedIn) {
-  //         Navigator.pop(context);
-  //       }
-  //       if (state is ErrorOcurredforSignIn) {
-  //         Navigator.pop(context);
-  //         String errMsg = (state).errMsg;
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text("Successfully logged In"),
+            backgroundColor: Colors.black,
+            duration: Duration(seconds: 3),
+          ));
+        }
+        if (state is ErrorOcurred) {
+          Navigator.pop(context);
+          String errMsg = (state).errMsg;
 
-  //         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //           content: Text(errMsg),
-  //           backgroundColor: Colors.black,
-  //           duration: Duration(seconds: 5),
-  //         ));
-  //       }
-  //     },
-  //     child: Container(),
-  //   );
-  // }
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(errMsg),
+            backgroundColor: Colors.black,
+            duration: Duration(seconds: 5),
+          ));
+        }
+      },
+      child: Container(),
+    );
+  }
 
   Widget buildTextField() {
     return Form(
@@ -177,8 +184,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return ElevatedButton(
       onPressed: () async {
         showProgressIndicator(context);
-        await signIn();
-        if (!mounted) return;
+        await BlocProvider.of<AuthCubit>(context)
+            .signInWithEmailAndPassword(emailController, passwordController);
+        // if (!mounted) return;
       },
       child: Text(
         "Log in",
@@ -192,44 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  signIn() async {
-    Navigator.pop(context);
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailController.text, password: passwordController.text);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("donee"),
-        backgroundColor: Colors.black,
-        duration: Duration(seconds: 5),
-      ));
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("user-not-found"),
-          backgroundColor: Colors.black,
-          duration: Duration(seconds: 5),
-        ));
-      } else if (e.code == 'wrong-password') {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("wrong-password"),
-          backgroundColor: Colors.black,
-          duration: Duration(seconds: 5),
-        ));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("error"),
-          backgroundColor: Colors.black,
-          duration: Duration(seconds: 5),
-        ));
-      }
-    }
-    setState(() {
-      isLoading = false;
-    });
-  }
+   
 
   @override
   void dispose() {
@@ -269,7 +240,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
               buildButton(context),
-              // buildSignInWithEmailAndPassword()
+              buildSignInWithEmailAndPassword()
             ],
           ),
         ),

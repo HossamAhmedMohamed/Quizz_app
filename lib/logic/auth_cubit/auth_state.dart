@@ -20,3 +20,9 @@ class Submitted extends AuthState{}
 class SuccessfullyLoggedIn extends AuthState{}
 
 class SuccessfullyLinked extends AuthState{}
+
+class PhoneNumberSubmitted extends AuthState {}
+
+class PhoneOtpVerified extends AuthState {}
+
+class SuccessfullyUpdated extends AuthState {}

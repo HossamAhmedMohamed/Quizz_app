@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iam_training/constants/strings.dart';
-import 'package:iam_training/logic/phone_num_cubit/phone_cubit.dart';
+import 'package:iam_training/logic/auth_cubit/auth_cubit.dart';
 import 'package:iam_training/presentation/widgets/forgot_image.dart';
 import 'package:iam_training/presentation/widgets/image.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -30,7 +30,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     } else {
       Navigator.pop(context);
       _phoneFormKey.currentState!.save();
-      BlocProvider.of<PhoneCubit>(context).submitPhoneNumber(phoneNumber);
+      BlocProvider.of<AuthCubit>(context).sendVerificationCode(phoneNumber);
     }
   }
 
@@ -113,21 +113,21 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   }
 
   Widget buildPhoneNumberSubmittedBloc() {
-    return BlocListener<PhoneCubit, PhoneState>(
+    return BlocListener<AuthCubit, AuthState>(
       listenWhen: (previous, current) {
         return previous != current;
       },
       listener: (context, State) {
-        if (State is isLoading) {
+        if (State is Loading) {
           showProgressIndicator(context);
         }
         if (State is PhoneNumberSubmitted) {
           Navigator.pop(context);
-          Navigator.of(context).pushNamed(verifyScreen, arguments: phoneNumber);
+          Navigator.of(context).pushNamed(verifyForgotPasswordScreen, arguments: phoneNumber);
         }
-        if (State is ErrorIsOcurred) {
+        if (State is ErrorOcurred) {
           Navigator.pop(context);
-          String errorMsg = (State).errorMsg;
+          String errorMsg = (State).errMsg;
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(errorMsg),
             backgroundColor: Colors.black,
