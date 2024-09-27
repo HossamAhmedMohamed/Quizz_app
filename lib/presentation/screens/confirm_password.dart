@@ -22,25 +22,6 @@ class _ConfirmPasswordState extends State<ConfirmPassword> {
 
   bool isVisible = true;
 
-  // void resetPassword(String newPassword) async {
-  //   if (passwordController.text == confirmPasswordController.text) {
-  //     User? user = FirebaseAuth.instance.currentUser;
-
-  //     try {
-  //       await user?.updatePassword(newPassword);
-  //       // Show success message
-  //     } catch (e) {
-  //       // Handle error
-  //       print(e);
-  //     }
-  //   } else {
-  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //       content: Text("Something error..."),
-  //       backgroundColor: Colors.black,
-  //       duration: Duration(seconds: 5),
-  //     ));
-  //   }
-  // }
 
   Widget buildIntroText() {
     return SizedBox(
